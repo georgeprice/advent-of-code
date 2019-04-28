@@ -3,22 +3,13 @@ def solve(i: int) -> int:
     if i == 1:
         return 0
 
-# returns the perimeter of the spiral at a given layer
-def _perimeter(layer: int) -> int:
-    return layer * 8
+# returns the perimeter of the spiral at a given depth
+def _perimeter(depth: int) -> int:
+    return depth * 8
 
-# returns the layer of a given index in the spiral
-def _layer(i: int) -> int:
-    perimeters = 1
-    layer = 0
-
-    while perimeters < i:
-        layer += 1
-        perimeters += _perimeter(layer)
-    return layer
-
-def _eq(y: int) -> bool:
-    return lambda x: x == y 
+# returns the depth of a given index in the spiral
+def _depth(i: int, depth=0, counter=1) -> int:
+    return depth if counter >= i else _depth(i, depth + 1, counter + _perimeter(depth + 1))
 
 if __name__ == "__main__":
 
@@ -27,11 +18,14 @@ if __name__ == "__main__":
     assert _perimeter(1) == 8
     assert _perimeter(2) == 16
 
+    def _eq(y: int) -> bool:
+        return lambda x: x == y
+
     # calculating the layer of a given index in the spiral
-    assert _layer(1) == 0
-    assert all(map(_eq(1), map(_layer, range(2, 10))))
-    assert all(map(_eq(2), map(_layer, range(10, 26))))
-    assert all(map(_eq(3), map(_layer, range(26, 49))))
+    assert _depth(1) == 0
+    assert all(map(_eq(1), map(_depth, range(2, 10))))
+    assert all(map(_eq(2), map(_depth, range(10, 26))))
+    assert all(map(_eq(3), map(_depth, range(26, 49))))
 
 
 """
