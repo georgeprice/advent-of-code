@@ -1,22 +1,59 @@
-# returns the distance of index i from 1 in the spiral
-def solve(i: int) -> int:
+import math
+from functools import lru_cache
+import sys
+
+sys.setrecursionlimit(10000)
+
+@lru_cache(maxsize=5012)
+def _depth(i: int) -> int:
+    # i = 4*n*(n+1) solve for n
+
+    if i == 1:
+        return 0
+    depth = 1
+    while i > (4 * depth * (depth + 1)) + 1:
+        depth += 1
+    return depth
+
+@lru_cache(maxsize=2056)
+def _dist(i: int) -> int:
+    """
+    RULES
+    - dist(1) == 0
+    - if the previous i was on the previous depth, then increment
+    - otherwise...
+        - the upper-bound for a depth's distance is depth * 2
+        - the lower-bound for a depth's distance is the depth
+        - if the previous i was the upper-bound, decrement
+        - if the previous i was the lower-bound, increment
+        - if the previous i was the first on the depth, decrement
+    """
+
+    # base case: i is the root so it's distance is 0
     if i == 1:
         return 0
 
-# returns the perimeter of the spiral at a given depth
-def _perimeter(depth: int) -> int:
-    return depth * 8
+    # if this is the first index on this depth...
+    if _depth(i - 1) != _depth(i):
+        return _dist(i - 1) + 1
 
-# returns the depth of a given index in the spiral
-def _depth(i: int, depth=0, counter=1) -> int:
-    return depth if counter >= i else _depth(i, depth + 1, counter + _perimeter(depth + 1))
+    # if the previous index was the upper bound...
+    if _dist(i - 1) == _depth(i) * 2:
+        return _dist(i - 1) - 1
+
+    # if the previous index was the lower bound...
+    if _dist(i - 1) == _depth(i):
+        return _dist(i - 1) + 1
+
+    # if the previous index was the first on this depth
+    if _depth(i - 1) != _depth(i - 2):
+        return _dist(i - 1) - 1
+
+    # otherwise, go up if it's a pattern, else go down
+    return _dist(i - 1) + 1 if _dist(i - 1) - _dist(i - 2) > 0 else _dist(i - 1) - 1
+
 
 if __name__ == "__main__":
-
-    # calculating the perimeter of the spiral at a given layer
-    assert _perimeter(0) == 0
-    assert _perimeter(1) == 8
-    assert _perimeter(2) == 16
 
     def _eq(y: int) -> bool:
         return lambda x: x == y
@@ -27,16 +64,10 @@ if __name__ == "__main__":
     assert all(map(_eq(2), map(_depth, range(10, 26))))
     assert all(map(_eq(3), map(_depth, range(26, 49))))
 
+    # calculating the manhattan distance
 
-"""
-37  36  35  34  33  32 31
-38  17  16  15  14  13 30
-39  18   5   4   3  12 29
-40  19   6   1   2  11 28
-41  20   7   8   9  10 27
-42  21  22  23  24  25 26
-43  44  45  46  47  48 49
-
-layer(j) = 
-perimeter(i) = i * 8
-"""
+    assert _dist(1) == 0
+    assert _dist(19) == 2
+    assert _dist(12) == 3
+    assert _dist(23) == 2
+    assert _dist(1024) == 31
