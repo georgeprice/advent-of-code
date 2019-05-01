@@ -1,8 +1,8 @@
-import math
 from functools import lru_cache
 import sys
 
 sys.setrecursionlimit(10000)
+
 
 @lru_cache(maxsize=5012)
 def _depth(i: int) -> int:
@@ -14,6 +14,7 @@ def _depth(i: int) -> int:
     while i > (4 * depth * (depth + 1)) + 1:
         depth += 1
     return depth
+
 
 @lru_cache(maxsize=2056)
 def _dist(i: int) -> int:
@@ -55,7 +56,7 @@ def _dist(i: int) -> int:
 
 if __name__ == "__main__":
 
-    def _eq(y: int) -> bool:
+    def _eq(y: int):
         return lambda x: x == y
 
     # calculating the layer of a given index in the spiral

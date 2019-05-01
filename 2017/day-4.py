@@ -1,6 +1,7 @@
 def solve(x: str) -> bool:
     return len(set(x.split(' '))) == len(x.split(' '))
 
+
 if __name__ == "__main__":
 
     assert solve("aa bb cc dd ee")

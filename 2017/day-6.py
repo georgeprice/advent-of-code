@@ -1,5 +1,6 @@
 import math
 
+
 def solve(banks: tuple) -> int:
 
     cache = set()
@@ -20,12 +21,14 @@ def solve(banks: tuple) -> int:
 
     return len(cache)
 
+
 def _next_index(lst: list) -> int:
     return next(filter(_is_max_pair(lst), enumerate(lst)))
 
 
 def _is_max_pair(lst: list):
     return lambda pair: pair[1] == max(lst)
+
 
 if __name__ == "__main__":
 

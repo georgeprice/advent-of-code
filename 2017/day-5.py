@@ -5,5 +5,6 @@ def solve(instructions: list) -> int:
         pc += instructions[pc] - 1
     return pc
 
+
 if __name__ == "__main__":
     assert solve([0, 3, 0, 1, -3]) == 5
