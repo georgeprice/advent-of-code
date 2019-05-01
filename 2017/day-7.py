@@ -5,11 +5,7 @@ def solve(tree: dict) -> str:
     parent_nodes = filter(_non_empty_value(tree), tree.keys())
     descendants = reduce(_add, map(tree.get, parent_nodes))
 
-    return next(filter( _excluded(set(descendants)), tree.keys()))
-
-
-def _excluded(s: set):
-    return lambda elem: elem not in s
+    return next(filter(lambda elem: elem not in set(descendants), tree.keys()))
 
 
 def _add(a: list, b: list) -> list:
