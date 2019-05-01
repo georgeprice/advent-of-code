@@ -2,10 +2,14 @@ from functools import reduce
 
 
 def solve(tree: dict) -> str:
-    roots = filter(_non_empty_value(tree), tree.keys())
-    descendants = reduce(_add, map(tree.get, roots))
+    parent_nodes = filter(_non_empty_value(tree), tree.keys())
+    descendants = reduce(_add, map(tree.get, parent_nodes))
 
-    return (set(tree.keys()) - set(descendants)).pop()
+    return next(filter( _excluded(set(descendants)), tree.keys()))
+
+
+def _excluded(s: set):
+    return lambda elem: elem not in s
 
 
 def _add(a: list, b: list) -> list:
