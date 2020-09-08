@@ -16,7 +16,7 @@ def hashes(salt: str) -> [str, int]:
             j_hash = _hash("{}{}".format(salt, i+j))
             if fivers(j_hash, triple):
                 yield h, i
-                breaktatu
+                break
 
 
 @lru_cache(maxsize=22728)
