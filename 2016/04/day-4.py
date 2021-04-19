@@ -1,3 +1,6 @@
+import string
+
+
 def solve(encrypted_name: str, sector_id: int, check_sum: str) -> bool:
     # get the number of occurrences for each letter in the encrypted name
     letter_counts = parse(encrypted_name.replace("-", ""))
@@ -39,6 +42,33 @@ def parse(name: str) -> {str: int}:
     for character in characters:
         counts[character] = name.count(character)
     return counts
+
+
+def parse_file() -> [(str, int, str)]:
+    with open("input") as w:
+        for l in w.readlines():
+            # tidy the line data and split by -
+            cells = l.replace("\n", "").split("-")
+
+            # parse the sector id and checksum data
+            last_cells = cells[-1].rstrip("]").split("[")
+            sector_id, checksum = int(last_cells[0]), last_cells[1]
+
+            # reformat the encrypted name
+            encrypted_name = "-".join(cells[:-1])
+            yield encrypted_name, sector_id, checksum
+
+
+def perform_shift_cipher(encrypted: str, shift: int) -> str:
+    shift_cipher = string.ascii_lowercase
+    out = ""
+    for char in encrypted:
+        if char in shift_cipher:
+            shifted_index = (shift_cipher.index(char) + shift) % len(shift_cipher)
+            out += shift_cipher[shifted_index]
+        elif char == "-":
+            out += " "
+    return out
 
 
 if __name__ == "__main__":
