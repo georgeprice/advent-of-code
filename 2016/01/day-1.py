@@ -9,6 +9,9 @@ def solve(steps: str) -> int:
     return sum(map(abs, [final_state[0], final_state[1]]))
 
 
+visited = set()
+
+
 def update_state(prev: (int, int, str), curr: (str, int)) -> (int, int, str):
     # unpacking tuple values for previous state and current step command
     x, y, direction = prev
@@ -16,14 +19,27 @@ def update_state(prev: (int, int, str), curr: (str, int)) -> (int, int, str):
 
     # update the direction and coordinates
     new_dir = _update_direction(direction, rot)
-    new_coordinates = _update_coordinates((x, y), new_dir, amount)
+    new_coordinates = (0, 0, "")
+    for visited_coordinates in _get_path((x, y), new_dir, amount):
+        _key = "({},{})".format(*visited_coordinates)
+        if _key in visited:
+            print("Already visited: {}".format(_key))
+        else:
+            visited.add(_key)
+        new_coordinates = visited_coordinates
     return new_coordinates[0], new_coordinates[1], new_dir
 
 
-def _update_coordinates(old: (int, int), direction: str, distance: int) -> (int, int):
+def _get_path(old: (int, int), direction: str, distance: int) -> [(int, int)]:
+    start = -1 if distance < 0 else 1
+    step = start
+    end = distance + start
     if direction in ["E", "W"]:
-        return old[0], old[1] + (distance if direction == "E" else -distance)
-    return old[0] + (distance if direction == "N" else -distance), old[1]
+        for move in range(start, end, step):
+            yield old[0], old[1] + (move if direction == "E" else -move)
+    else:
+        for move in range(start, end, step):
+            yield old[0] + (move if direction == "N" else -move), old[1]
 
 
 def _update_direction(direction: str, rotation: str) -> str:
