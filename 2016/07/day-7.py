@@ -1,7 +1,17 @@
 # parses the raw string - only true if no hypernet sequences are ABBA, but at least one non-hypernet sequences is
-def solve(raw: str) -> bool:
+def supports_tsl(raw: str) -> bool:
     hn, nhn = parse(raw)
     return not any(map(is_abba, hn)) and any(map(is_abba, nhn))
+
+
+def supports_ssl(raw: str) -> bool:
+    hns, nhns = parse(raw)
+    for nhn in nhns:
+        for hn in hns:
+            for equivalent_bab in is_aba(nhn):
+                if equivalent_bab in hn:
+                    return True
+    return False
 
 
 # parses a raw "IPv7" IP into two lists - hypernet sequences and non-hypernet sequences
@@ -9,7 +19,7 @@ def parse(raw: str) -> ([str], [str]):
     hypernet_sequences, non_hypernet_sequences = [], []
     is_hypernet_sequence = False
     start_index = 0
-    while start_index < len(raw) - 3:
+    while start_index < len(raw) - 2:
         start_character = raw[start_index]
 
         # checking for special start characters - not included in the sequence but control sequence type
@@ -39,6 +49,18 @@ def parse(raw: str) -> ([str], [str]):
         else:
             non_hypernet_sequences += [sequence]
     return hypernet_sequences, non_hypernet_sequences
+
+
+def is_aba(raw: str) -> [str]:
+    # recursive case - try all 3 character substrings
+    solutions = []
+    for i in range(len(raw)-2):
+        child = raw[i:i+3]
+        if len(set(child)) != 2:
+            continue
+        if child[0] == child[2] and child[0] != child[1]:
+            solutions.append("{}{}{}".format(child[1], child[0], child[1]))
+    return solutions
 
 
 def is_abba(raw: str) -> bool:
