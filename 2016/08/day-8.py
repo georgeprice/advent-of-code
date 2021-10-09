@@ -30,6 +30,14 @@ class Screen:
         for h in range(len(shifted)):
             self._cells[h][col] = shifted[h]
 
+    def lit(self) -> int:
+        count = 0
+        for row in self._cells:
+            for col in row:
+                if col == "#":
+                    count += 1
+        return count
+
     @staticmethod
     def _shift(row: [str], amount: int) -> [str]:
         row_cells = row[:] + row[:]
@@ -49,37 +57,41 @@ class Command:
 
     def __init__(self, raw: str):
         # parses the raw command string, creates an apply method to modify a Screen
-        command, a, b = self._parse(raw)
-        if command == "rect":
+        self.command, a, b = self._parse(raw)
+        if self.command == "rect":
             self.apply = lambda s: s.rect(a, b)
-        elif command == "row":
+        elif self.command == "row":
             self.apply = lambda s: s.rotate_row(a, b)
-        elif command == "column":
+        elif self.command == "column":
             self.apply = lambda s: s.rotate_column(a, b)
-        elif command == "exit":
+        elif self.command == "exit":
             self.apply = sys.exit
         else:
-            self.apply = lambda _: print("Unknown command ", command)
+            self.apply = lambda _: print("Unknown command ", self.command)
 
     @staticmethod
     def _parse(raw: str) -> (str, int, int):
-        command, a, b = "unk", 0, 0
+        _command, _a, _b = "unk", 0, 0
         words = raw.split(" ")
         if len(words) == 1:
-            command = words[0]
+            _command = words[0]
         elif len(words) == 2:
-            command = words[0]
-            a, b = words[1].split("x")
+            _command = words[0]
+            _a, _b = words[1].split("x")
         else:
-            command = words[1]
-            a = words[2].split("=")[1]
-            b = words[4]
-        return command, int(a), int(b)
+            _command = words[1]
+            _a = words[2].split("=")[1]
+            _b = words[4]
+        return _command, int(_a), int(_b)
 
 
 if __name__ == "__main__":
-    screen = Screen(5, 5)
-    while True:
-        i = input("Enter command: ")
-        Command(i).apply(screen)
-        print(screen)
+    screen = Screen(50, 6)
+    with open("input.txt") as f:
+        ls = f.readlines()
+        commands = map(Command, ls)
+        for command in commands:
+            command.apply(screen)
+
+    print(screen)
+    print("lit:", screen.lit())
