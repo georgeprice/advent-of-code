@@ -1,8 +1,8 @@
 # returns the hidden message from a list of index counts
-def get_message(index_counts: [{str: int}]) -> str:
+def get_message(index_counts: [{str: int}], most_popular: bool) -> str:
     message = ""
     for index_count in index_counts:
-        most_popular = sorted(index_count.keys(), key=lambda k: -index_count[k])
+        most_popular = sorted(index_count.keys(), key=lambda k: -index_count[k] if most_popular else index_count[k])
         message += "{}".format(most_popular[0])
     return message
 
@@ -29,5 +29,5 @@ if __name__ == "__main__":
     test_sequences = ["eedadn", "drvtee", "eandsr", "raavrd", "atevrs", "tsrnev", "sdttsa", "rasrtv", "nssdts",
                       "ntnada", "svetve", "tesnvt", "vntsnd", "vrdear","dvrsen", "enarar"]
     counts = process_rows(test_sequences, 6)
-    m = get_message(counts)
+    m = get_message(counts, True)
     assert m == "easter"
