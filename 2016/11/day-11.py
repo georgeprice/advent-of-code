@@ -7,17 +7,12 @@ from itertools import chain, combinations
 """
 
 
-class Element(Enum):
-    HYDROGEN = "H"
-    LITHIUM = "L"
-
-
 class Electrical(Enum):
     MICROCHIP = "M"
     GENERATOR = "G"
 
 
-Movable = typing.Tuple[Element, Electrical]
+Movable = typing.Tuple[typing.AnyStr, Electrical]
 State = typing.Tuple[int, typing.List[typing.List[Movable]]]
 
 """ 
@@ -28,7 +23,7 @@ State = typing.Tuple[int, typing.List[typing.List[Movable]]]
 
 def movable_string(movable: Movable) -> str:
     element, electrical = movable
-    return str(element.value) + str(electrical.value)
+    return str(element) + str(electrical.value)
 
 
 def floor_string(floor: [Movable]) -> str:
@@ -78,8 +73,9 @@ def valid(state: State) -> bool:
 # valid_floor returns whether a floor is valid (each microchip has a generator if a conflicting generator exists)
 def valid_floor(floor: [Movable]) -> bool:
 
-    unbound_microchips, generators = {}, {}
+    elements, unbound_microchips, generators = set(), {}, {}
     for element, electrical in floor:
+        elements.update(element)
         if element not in unbound_microchips:
             unbound_microchips[element] = 0
         if electrical == Electrical.MICROCHIP:
